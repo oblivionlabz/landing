@@ -1,22 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      // Apex /grimoire → product subdomain. Permanent so Google consolidates
-      // any inbound link equity onto the subdomain.
-      {
-        source: "/grimoire",
-        destination: "https://grimoire.oblivionlabz.net/",
-        permanent: true,
-      },
-      {
-        source: "/grimoire/:path*",
-        destination: "https://grimoire.oblivionlabz.net/:path*",
-        permanent: true,
-      },
-    ];
-  },
+  // Static export for Cloudflare Pages (site is pure marketing — no server
+  // features). The old /grimoire → subdomain redirects moved to
+  // public/_redirects (Cloudflare Pages redirects file), since next.config
+  // redirects() don't apply to `output: "export"`.
+  output: "export",
 };
 
 export default nextConfig;

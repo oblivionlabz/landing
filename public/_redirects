@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects — replaces next.config redirects() (unsupported
+# with output: "export"). Permanent so Google consolidates link equity onto
+# the product subdomain.
+/grimoire https://grimoire.oblivionlabz.net/ 301
+/grimoire/* https://grimoire.oblivionlabz.net/:splat 301

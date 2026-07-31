@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const CONTACT_EMAIL = "dan.vermillion@oblivionlabz.net";
 const X_HANDLE = "OblivionLabz";
-const GRIMOIRE_URL = "https://grimoire.oblivionlabz.net";
+
 
 type Capability = {
   rune: string;
@@ -13,49 +13,69 @@ type Capability = {
 const CAPABILITIES: Capability[] = [
   {
     rune: "▢",
-    name: "AI engineering",
-    body: "Claude Code skills, Agent SDK harnesses, RAG pipelines, evals. Senior-developer workflows encoded as reusable tooling.",
+    name: "Agent orchestration",
+    body: "Multi-agent fleets — Claude Code skill graphs, MCP servers, hooks, subagent topologies, local-LLM routing through LiteLLM. Operators run their own dispatcher; I build the dispatcher.",
   },
   {
     rune: "◇",
-    name: "Automation",
-    body: "n8n, systemd, cron, container orchestration. Multi-step processes that run themselves and report back.",
+    name: "Automation surfaces",
+    body: "n8n, systemd, cron, container orchestration, hook chains. Multi-step processes that run themselves on a homelab and report back without retainer drag.",
   },
   {
     rune: "⌬",
-    name: "Infrastructure",
-    body: "Postgres, observability, IaC, reverse proxies, secrets management. Production-grade substrate without the SaaS tax.",
+    name: "Sovereign infrastructure",
+    body: "Bare-metal homelab, Postgres, vector stores, observability, reverse proxies, secrets management. Production-grade substrate without the SaaS tax.",
   },
   {
     rune: "✕",
-    name: "Security posture",
-    body: "Threat hunting, detection engineering, hardening, supply-chain hygiene. Senior practitioner background — applied to the AI stack itself.",
+    name: "Security depth",
+    body: "Senior offensive + detection background, CVP-approved scope. Applied as the lens for hardening AI agents, supply-chain hygiene, and the credential surfaces autonomous fleets create.",
   },
 ];
 
-type PortfolioItem = {
-  status: "live" | "soon";
+type RegistryProduct = {
+  id: string;
   name: string;
-  tagline: string;
-  body: string;
-  cta?: { label: string; href: string };
+  description: string;
+  url: string;
+  type: string;
+  price: string;
+  price_cents: number;
+  live?: boolean;
+  tags?: string[];
+  created?: string;
+  source?: string;
 };
 
-const PORTFOLIO: PortfolioItem[] = [
-  {
-    status: "live",
-    name: "The Operator's Grimoire",
-    tagline: "14 Claude Code skills · $99 one-time",
-    body: "Spec-driven development, ADRs, scaffolds, evals, multi-agent orchestration — fourteen senior-dev workflows encoded as Claude Code skills. Drop into ~/.claude/, restart the CLI, ship.",
-    cta: { label: "View product →", href: GRIMOIRE_URL },
-  },
-  {
-    status: "soon",
-    name: "More shipping",
-    tagline: "agent + automation surfaces in flight",
-    body: "Additional operator tooling moving through the pipeline. Subscribe via the founding-cohort channel inside Grimoire to get early access.",
-  },
-];
+function typeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    prompt_pack: "Prompt Pack",
+    design_template: "Design Template",
+    how_to_guide: "How-To Guide",
+    skill_file: "Skill File",
+    skill_pack: "Skill Pack",
+    saas: "SaaS Product",
+    landing_page: "Landing Page",
+    digital_product: "Digital Product",
+  };
+  return labels[type] || type;
+}
+
+async function fetchRegistry(): Promise<RegistryProduct[]> {
+  try {
+    const resp = await fetch("https://skills.oblivionlabz.net/api/registry", {
+      headers: { "User-Agent": "oblivionlabz-landing/1.0" },
+      next: { revalidate: 300 },
+    });
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return (data.products || []).filter(
+      (p: RegistryProduct) => p.live !== false && p.url,
+    );
+  } catch {
+    return [];
+  }
+}
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -66,7 +86,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function Page() {
+export default async function Page() {
+  const products = await fetchRegistry();
   return (
     <main className="relative isolate">
       <div
@@ -110,8 +131,8 @@ export default function Page() {
             <span className="block text-accent">LABZ</span>
           </h1>
           <p className="mt-10 max-w-2xl text-balance text-lg leading-relaxed text-muted sm:text-xl">
-            A one-operator forge shipping AI development tooling, agent
-            infrastructure, and operator-grade automation. No subscriptions, no
+            Autonomous-agent orchestration, shipped by the operator who runs
+            his own fleet. Senior security depth on tap. No subscriptions, no
             telemetry, no retainer trap.
           </p>
 
@@ -135,7 +156,7 @@ export default function Page() {
             <div>
               <dt>Discipline</dt>
               <dd className="mt-2 text-base tracking-normal text-foreground">
-                AI · Sec · Infra
+                Agents · Automation · Infra · Sec
               </dd>
             </div>
             <div>
@@ -153,7 +174,7 @@ export default function Page() {
             <div>
               <dt>Shipping</dt>
               <dd className="mt-2 text-base tracking-normal text-foreground">
-                Live · 1 product
+                Live · {products.length} products
               </dd>
             </div>
           </dl>
@@ -165,16 +186,16 @@ export default function Page() {
         <div className="mx-auto max-w-6xl px-6 py-24">
           <SectionLabel>02 / about</SectionLabel>
           <h2 className="max-w-3xl font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            Senior practitioner. AI-native forge. Champaign, IL.
+            Autonomous-agent orchestrator with senior security depth. Champaign, IL.
           </h2>
 
           <div className="mt-12 grid gap-12 lg:grid-cols-3">
             <p className="text-lg leading-relaxed text-foreground/90">
-              OblivionLabz is the public face of work I do under the hood —
-              shipping AI development tooling, agent infrastructure, and
-              operator-grade automation. Background is senior-side security
-              engineering and detection work; the lens stays the same when I
-              build for AI.
+              OblivionLabz is the public face of a one-operator forge that runs
+              its own multi-agent fleet end-to-end. Skill graphs, MCP servers,
+              hook chains, local-LLM routing, sovereign infrastructure. Senior
+              offensive-security background is the lens — applied to hardening
+              the agent stack itself, not as the primary product.
             </p>
             <p className="text-lg leading-relaxed text-foreground/90">
               The forge runs out of a personal homelab. Production discipline,
@@ -183,10 +204,10 @@ export default function Page() {
               first.
             </p>
             <p className="text-lg leading-relaxed text-foreground/90">
-              Output lands as discrete products — skill packs, templates, agent
-              harnesses, runbooks. Operator-priced, one-time licensing, no
-              subscription trap. Long-game positioning: build the senior
-              workflows AI assistants ship without.
+              Output lands as discrete products — skill packs, agent harnesses,
+              orchestration runbooks. Operator-priced, one-time licensing, no
+              subscription trap. Long-game: ship the senior dispatcher
+              workflows AI assistants don&apos;t.
             </p>
           </div>
         </div>
@@ -238,53 +259,55 @@ export default function Page() {
             Shipping now.
           </h2>
 
-          <ul className="mt-14 grid gap-6 lg:grid-cols-2">
-            {PORTFOLIO.map((item) => (
+          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((item) => (
               <li
-                key={item.name}
-                className="chamfer relative border border-border bg-surface p-10"
+                key={item.id}
+                className="chamfer relative flex h-full flex-col border border-border bg-surface p-8 transition-colors hover:border-accent-dim"
               >
-                <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em]">
-                  {item.status === "live" ? (
-                    <>
-                      <span
-                        aria-hidden
-                        className="block h-2 w-2 bg-accent pulse-dot"
-                      />
-                      <span className="text-accent">Live</span>
-                    </>
-                  ) : (
-                    <>
-                      <span aria-hidden className="block h-2 w-2 bg-muted" />
-                      <span className="text-muted">Soon</span>
-                    </>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em]">
+                    <span
+                      aria-hidden
+                      className="block h-2 w-2 bg-accent pulse-dot"
+                    />
+                    <span className="text-accent">{typeLabel(item.type)}</span>
+                  </div>
+                  {item.price && (
+                    <span className="font-mono text-sm font-semibold text-accent">
+                      {item.price}
+                    </span>
                   )}
                 </div>
 
-                <h3 className="mt-5 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h3 className="mt-5 font-display text-xl font-semibold leading-tight tracking-tight">
                   {item.name}
                 </h3>
-                <p className="mt-2 font-mono text-xs uppercase tracking-[0.22em] text-muted">
-                  {item.tagline}
-                </p>
-                <p className="mt-6 text-base leading-relaxed text-foreground/85">
-                  {item.body}
-                </p>
 
-                {item.cta && (
-                  <div className="mt-8">
-                    <Link
-                      href={item.cta.href}
-                      className="inline-flex items-center gap-2 border border-accent-dim px-5 py-3 font-mono text-xs uppercase tracking-[0.22em] text-accent transition-colors hover:bg-accent hover:text-accent-fg"
-                      rel="noopener"
-                    >
-                      {item.cta.label}
-                    </Link>
-                  </div>
+                {item.description && (
+                  <p className="mt-3 text-sm leading-relaxed text-foreground/70 line-clamp-3">
+                    {item.description}
+                  </p>
                 )}
+
+                <div className="mt-6 mt-auto pt-6">
+                  <Link
+                    href={item.url}
+                    className="inline-flex items-center gap-2 border border-accent-dim px-4 py-2.5 font-mono text-xs uppercase tracking-[0.22em] text-accent transition-colors hover:bg-accent hover:text-accent-fg"
+                    rel="noopener"
+                  >
+                    View product →
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>
+
+          {products.length === 0 && (
+            <div className="chamfer mt-14 border border-border bg-surface p-10 text-center font-mono text-xs uppercase tracking-[0.24em] text-muted">
+              Products loading — check back shortly.
+            </div>
+          )}
         </div>
       </section>
 
